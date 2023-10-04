@@ -1,7 +1,6 @@
-import { useState } from "react";
 import { Widget } from "../internals/Widget";
 
-interface HalfAngleGaugeArgs {
+interface GaugeArgs {
     value: number,
     start?: number,
     min?: number,
@@ -9,9 +8,10 @@ interface HalfAngleGaugeArgs {
     gauge?: string,
     color?: string,
     title?: string,
+    label?: string,
 }
 
-export function HalfAngleGauge({ value, start, min, max, gauge, color, title } : HalfAngleGaugeArgs){
+export function HalfAngleGauge({ value, start, min, max, gauge, color, title, label } : GaugeArgs){
 
     start ??= 0;
     min ??= 0;
@@ -19,6 +19,7 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title } :
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
     title ??= "";
+    label ??= (Math.round(value * 10)*10).toFixed(0);
 
 
     const viewport = {
@@ -32,7 +33,7 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title } :
     const textColor = color;
 
     const map = (value : number, min : number, max : number) => {
-        value = (value - min) / (max - min) + min;
+        value = (value - min) / (max - min);
         value = Math.min(Math.max(value, 0), 1);
         return value;
     }
@@ -55,8 +56,7 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title } :
         <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width="150px" height="75px">
 
             <path d={`M ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 0 ${ccwFlag} ${endPoint.x} ${endPoint.y}`} stroke={gaugeColor} fill="none" strokeWidth={strokeWidth}></path>
-            <text fill={textColor} x={viewport.width/2} y={viewport.height -2} fontSize={viewport.height / 2} textAnchor="middle" fontVariant="tabular-nums">{Math.floor(value * 10)*10}</text>
-            {/* <text fill={textColor} x={viewport.width/2} y={viewport.height} dx={0} dy={0} fontSize={viewport.height / 4} textAnchor="start">{postLabel}</text> */}
+            <text fill={textColor} x={viewport.width/2} y={viewport.height -2} fontSize={viewport.height / 2} textAnchor="middle" fontVariant="tabular-nums">{label}</text>
 
         </svg>
     </Widget>)
@@ -64,7 +64,7 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title } :
 
 
 
-export function FullAngleGauge({ value, start, min, max, gauge, color, title } : HalfAngleGaugeArgs){
+export function FullAngleGauge({ value, start, min, max, gauge, color, title, label } : GaugeArgs){
 
     start ??= 0;
     min ??= 0;
@@ -72,6 +72,7 @@ export function FullAngleGauge({ value, start, min, max, gauge, color, title } :
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
     title ??= "";
+    label ??= (Math.round(value * 10)*10).toFixed(0);
 
 
     const viewport = {
@@ -108,7 +109,7 @@ export function FullAngleGauge({ value, start, min, max, gauge, color, title } :
         <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width="150px" height="150px">
 
             <path d={`M ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 0 ${ccwFlag} ${endPoint.x} ${endPoint.y}`} stroke={gaugeColor} fill="none" strokeWidth={strokeWidth}></path>
-            <text fill={textColor} x={viewport.width/2} y={viewport.height/2+1} fontSize={viewport.height / 4} dominantBaseline="middle" textAnchor="middle" fontVariant="tabular-nums">{Math.floor(value * 10)*10}</text>
+            <text fill={textColor} x={viewport.width/2} y={viewport.height/2+1} fontSize={viewport.height / 4} dominantBaseline="middle" textAnchor="middle" fontVariant="tabular-nums">{label}</text>
             {/* <text fill={textColor} x={viewport.width/2} y={viewport.height} dx={0} dy={0} fontSize={viewport.height / 4} textAnchor="start">{postLabel}</text> */}
 
         </svg>

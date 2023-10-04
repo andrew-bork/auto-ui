@@ -1,6 +1,6 @@
 
 interface WidgetArgs {
-    children: React.ReactElement,
+    children: React.ReactElement|React.ReactElement[],
     title: string,
 };
 
