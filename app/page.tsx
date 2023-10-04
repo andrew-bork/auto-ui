@@ -9,6 +9,7 @@ import { HorizontalRangeSlider } from './widgets/inputs/LinearRangeSlider';
 import { Colors } from "./widgets/WidgetSettings";
 import { GridSlider } from './widgets/inputs/GridSlider';
 import PrimaryFlightDisplay from './widgets/other/PrimaryFlightDisplay';
+import { TimePlot } from './widgets/outputs/Graph';
 
 export default function Home() {
 
@@ -73,5 +74,6 @@ export default function Home() {
             />
             {/* <PrimaryFlightDisplay roll={x * 30} pitch={y * 30}/> */}
         </Widget>
+        <TimePlot values={[x, y, test]} />
     </main>)
 }
