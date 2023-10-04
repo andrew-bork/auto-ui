@@ -1,4 +1,4 @@
-import { Widget } from "../internals/Widget";
+import { Widget } from "../Widget";
 
 interface GaugeArgs {
     value: number,
@@ -19,7 +19,7 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title, la
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
     title ??= "";
-    label ??= (Math.round(value * 10)*10).toFixed(0);
+    label ??= (Math.round(value * 10)/10).toFixed(1);
 
 
     const viewport = {
@@ -54,10 +54,8 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title, la
 
     return (<Widget title={title}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width="150px" height="75px">
-
             <path d={`M ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 0 ${ccwFlag} ${endPoint.x} ${endPoint.y}`} stroke={gaugeColor} fill="none" strokeWidth={strokeWidth}></path>
             <text fill={textColor} x={viewport.width/2} y={viewport.height -2} fontSize={viewport.height / 2} textAnchor="middle" fontVariant="tabular-nums">{label}</text>
-
         </svg>
     </Widget>)
 }
@@ -72,7 +70,7 @@ export function FullAngleGauge({ value, start, min, max, gauge, color, title, la
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
     title ??= "";
-    label ??= (Math.round(value * 10)*10).toFixed(0);
+    label ??= (Math.round(value * 10)/10).toFixed(1);
 
 
     const viewport = {
@@ -86,7 +84,7 @@ export function FullAngleGauge({ value, start, min, max, gauge, color, title, la
     const textColor = color;
 
     const map = (value : number, min : number, max : number) => {
-        value = (value - min) / (max - min) + min;
+        value = 2 * (value - min) / (max - min) - 1;
         value = Math.min(Math.max(value, -1), 1);
         return value;
     }
@@ -110,8 +108,6 @@ export function FullAngleGauge({ value, start, min, max, gauge, color, title, la
 
             <path d={`M ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 0 ${ccwFlag} ${endPoint.x} ${endPoint.y}`} stroke={gaugeColor} fill="none" strokeWidth={strokeWidth}></path>
             <text fill={textColor} x={viewport.width/2} y={viewport.height/2+1} fontSize={viewport.height / 4} dominantBaseline="middle" textAnchor="middle" fontVariant="tabular-nums">{label}</text>
-            {/* <text fill={textColor} x={viewport.width/2} y={viewport.height} dx={0} dy={0} fontSize={viewport.height / 4} textAnchor="start">{postLabel}</text> */}
-
         </svg>
     </Widget>)
 }

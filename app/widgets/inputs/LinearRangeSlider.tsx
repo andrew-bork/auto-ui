@@ -1,4 +1,4 @@
-import { Widget } from "../internals/Widget"
+import { Widget } from "../Widget"
 
 interface RangeSliderArgs {
     value: number,

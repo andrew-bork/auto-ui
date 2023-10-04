@@ -1,4 +1,4 @@
-import { Widget } from "../internals/Widget";
+import { Widget } from "../Widget";
 
 interface GaugeArgs {
     value: number,
@@ -20,7 +20,7 @@ export function HorizontalLinearGauge({ value, start, min, max, gauge, color, ti
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
     title ??= "";
-    label ??= (Math.round(value * 10)*10).toFixed(0);
+    label ??= (Math.round(value * 10)/10).toFixed(1);
 
 
     const viewport = {
@@ -75,7 +75,7 @@ export function VerticalLinearGauge({ value, start, min, max, gauge, color, titl
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
     title ??= "";
-    label ??= (Math.round(value * 10)*10).toFixed(0);
+    label ??= (Math.round(value * 10)/10).toFixed(1);
     minWidth ??= "60px";
 
 
