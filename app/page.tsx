@@ -74,6 +74,6 @@ export default function Home() {
             />
             {/* <PrimaryFlightDisplay roll={x * 30} pitch={y * 30}/> */}
         </Widget>
-        <TimePlot values={[x, y, test]} />
+        <TimePlot values={[x, y, test, -(test-1)]} maxPoints={200} min={-1} max={2}/>
     </main>)
 }
