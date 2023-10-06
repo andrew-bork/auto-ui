@@ -1,3 +1,4 @@
+import { LegacyRef, forwardRef } from "react"
 
 interface WidgetArgs {
     children: React.ReactElement|React.ReactElement[],
@@ -10,10 +11,10 @@ interface WidgetArgs {
  * Base class for all Widgets.
  * 
  */
-export function Widget({ title, children } : WidgetArgs) {
+export const Widget = forwardRef(function Widget({ title, children } : WidgetArgs, ref : LegacyRef<HTMLDivElement>) {
 
     return (
-        <div className="widget" style={
+        <div className="widget" ref={ref} style={
             {
                 gridTemplateColumns: "100%",
                 gridTemplateRows: `min-content auto`,
@@ -34,4 +35,4 @@ export function Widget({ title, children } : WidgetArgs) {
             </div>
         </div>
     )
-}
+});

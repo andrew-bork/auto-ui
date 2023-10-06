@@ -1,3 +1,10 @@
+/**
+ * TODO Maybe use a jsdom object instead of react dom for canvas objects. That way rendering can be more easily controlled.
+ * 
+ * 
+ */
+
+
 import { useEffect, useRef } from "react";
 import { Widget } from "../Widget";
 import { Colors } from "../WidgetSettings";
@@ -21,36 +28,192 @@ function getMinMax(values:number[]) {
     }), {min:Infinity, max:-Infinity});;
 }
 
+
+interface Line {
+    color: string,
+    values: number[]
+}
+
+interface TimePlotCanvas {
+    mainCanvas: HTMLCanvasElement,
+    mainCtx: CanvasRenderingContext2D|null,
+
+    width: number,
+    height: number,
+
+    max: number|null,
+    min: number|null,
+
+    maxPoints: number,
+
+    lines: Line[],
+}
+class TimePlotCanvas {
+    constructor(width: number, height: number, maxPoints: number, lineAmount: number, colors: string[]) {
+        this.mainCanvas = document.createElement("canvas");
+        this.mainCtx = this.mainCanvas.getContext("2d");
+
+        this.max = 1;
+        this.min = -1;
+
+        this.lines = [];
+
+        this.maxPoints = maxPoints;
+
+        this.setSize(width, height);
+
+        for(let i = 0; i < lineAmount; i ++) {
+            this.addLine(colors[i % colors.length]);
+        }
+    }
+
+    setSize(width: number, height: number) {
+        this.mainCanvas.width = this.width = width;
+        this.mainCanvas.height = this.height = height;
+    }
+
+    addLine(color:string) {
+        this.lines.push({
+            color,
+            values: []
+        });
+    }
+
+    addValue(line: number, value: number) {
+        this.lines[line].values.push(value);
+        if(this.lines[line].values. length >= this.maxPoints) {
+            this.lines[line].values.shift();
+        }
+    }
+
+
+
+    repaint() {
+        if(this.mainCtx == null) return;
+        let ctx = this.mainCtx;
+
+        let bounds = { min : -1, max: 1 };
+
+        if(this.max == null || this.min == null) {
+            const { min, max } = this.lines.reduce((prev, data) => {
+                const { 
+                    min: dataMin, 
+                    max: dataMax 
+                } = getMinMax(data.values);
+    
+                return { 
+                    min: Math.min(prev.min, dataMin), 
+                    max: Math.max(prev.max, dataMax)
+                };
+            }, {min: Infinity, max: -Infinity});
+
+            bounds.min = min;
+            bounds.max = max;
+        }else {
+            bounds.min = this.min;
+            bounds.max = this.max;
+        }
+
+        
+        const yAxisOffset = 30;
+        const map = (value : { x:number, y:number }) => {
+            return {
+                x: (this.width - yAxisOffset) * value.x / 200 + yAxisOffset,
+                y: this.height - this.height * (value.y - bounds.min) / (bounds.max - bounds.min) ,
+            };
+        }
+
+        let origin = map({ x: 0, y: 0});
+
+
+        ctx.clearRect(0, 0, this.width, this.height);
+        
+        ctx.strokeStyle = "#888888";
+        ctx.lineWidth = 0.5;
+        ctx.beginPath();
+        ctx.moveTo(0, origin.y);;
+        ctx.lineTo(this.width, origin.y);
+        ctx.stroke();
+
+
+
+        this.lines.forEach((line) => {
+            if(line.values.length > 1) {
+                ctx.beginPath();
+                let end = line.values.length - 1;
+                let i = end;
+                let mapped = map({x: i, y: line.values[i]});
+                ctx.moveTo(mapped.x, mapped.y);
+                for(; i >= 0; i--) {
+                    mapped = map({x: i, y: line.values[i]});
+                    ctx.lineTo(mapped.x, mapped.y);
+                }
+                ctx.lineWidth = 2;
+                ctx.strokeStyle = line.color;
+                ctx.stroke();
+            }
+        });
+        
+    }
+
+}
+
 export function TimePlot({values, min, max, maxPoints} : TimePlotArgs) {
 
+    
     let width = 600;
     let height = 300;
-
-    const canvasRef = useRef<HTMLCanvasElement|null>(null);
-    const ctxRef = useRef<CanvasRenderingContext2D|null>(null);
-
-    const minRef = useRef(min);
-    const maxRef = useRef(max);
+    
+    const colors = Object.values(Colors);
+    const canvasRef = useRef<TimePlotCanvas>(new TimePlotCanvas(width, height, maxPoints ?? 200, values.length, colors));
 
     useEffect(() => {
-        minRef.current = min;
-        maxRef.current = max;
+        canvasRef.current.min = min ?? null;
+        canvasRef.current.max = max ?? null;
     }, [min, max]);
 
     const valuesRef = useRef<number[]>(values);
-    const maxPointsRef = useRef<number> (maxPoints ?? 200);
-
-
-    const colors = Object.values(Colors);
-    const initialDataset : Data[] = values.map((value, i) => ({
-        color: colors[i % colors.length],
-        values: [value]
-    }));
-
-    const datasetRef = useRef<Data[]>(initialDataset);
-    // const chartRef = useRef<Chart>(null);
 
     
+    useEffect(() => {
+        canvasRef.current.maxPoints = maxPoints ?? 200;
+    }, [maxPoints])
+
+    useEffect(() => {
+        valuesRef.current = values;
+    }, [values]);
+
+
+    
+    const widgetRef = useRef<HTMLDivElement|null>(null);
+
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            // console.log(canvasRef.current.lines);
+            valuesRef.current.forEach((value, i) => {
+                canvasRef.current.addValue(i, value);
+            });
+
+            canvasRef.current.repaint();
+        }, 10);
+        return () => {
+            clearInterval(interval);
+        };
+    }, []);
+
+    useEffect(() => {
+        if(widgetRef.current == null) return;
+        widgetRef.current.appendChild(canvasRef.current.mainCanvas);
+    }, [widgetRef])
+
+    return (<Widget title="Graph" ref={widgetRef}>
+    </Widget>)
+}
+/*
+
+
+
     // REPAINT
     const repaint = () => {
         if(ctxRef.current === null) return;
@@ -156,17 +319,4 @@ export function TimePlot({values, min, max, maxPoints} : TimePlotArgs) {
         };
     }, []);
 
-    useEffect(() => {
-        maxPointsRef.current = maxPoints ?? 200;
-    }, [maxPoints])
-
-    useEffect(() => {
-        valuesRef.current = values;
-    }, [values]);
-
-    return (<Widget title="Graph">
-        <canvas ref={canvasRef}>
-
-        </canvas>
-    </Widget>)
-}
+    */
