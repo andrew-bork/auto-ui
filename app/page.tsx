@@ -8,72 +8,60 @@ import { HorizontalRangeSlider } from './widgets/inputs/LinearRangeSlider';
 
 import { Colors } from "./widgets/WidgetSettings";
 import { GridSlider } from './widgets/inputs/GridSlider';
-import PrimaryFlightDisplay from './widgets/other/PrimaryFlightDisplay';
-import { TimePlot } from './widgets/outputs/Graph';
+import ArtificialHorizon from './widgets/other/ArtificialHorizon';
+import { LivePolarGraph, LiveTimePlot } from './widgets/outputs/Graph';
+import { Column } from './widgets/layout/Column';
 
 export default function Home() {
 
-    const [ test, setTest ] = useState(0);
-
     useEffect(() => {
         let i = 0;
-        const interval = setInterval(() => {
-            // console.log(i);
-            setTest((Math.sin(i) * 0.5) + 0.5);
-
-            i += 0.05;
-        }, 10);
 
         return () => {
-            clearInterval(interval)
+            // clearInterval(interval)
         };
     }, [])
 
-    const [x, setX] = useState(0);
-    const [y, setY] = useState(0);
+    // console.log(test)-
 
-    // console.log(test);
+    return (<main>
+        <ArtificialHorizon roll={10} pitch={20} title="Primary"/>
+        <LiveTimePlot values={[]} min={-5} max={5}/>
+        <Widget title="Orientation">
+            <FullAngleGauge value={-10} min={-180} max={180} title="Roll"/>
+            <FullAngleGauge value={-20} min={-180} max={180} title="Pitch"/>
+            <FullAngleGauge value={10} min={-180} max={180} title="Yaw"/>
+        </Widget>
+        <Widget title="Motor Power">
+            <Column>
+                <HalfAngleGauge value={0.1} min={0} max={1} title="FL"/>
+                <HalfAngleGauge value={0.1} min={0} max={1} title="BL"/>
+            </Column>
+            <Column>
+                <HalfAngleGauge value={0.1} min={0} max={1} title="FR"/>
+                <HalfAngleGauge value={0.1} min={0} max={1} title="BR"/>
+            </Column>
+        </Widget>
 
-    return (<main style={styles}>
-        <Widget title="Half Angle Gauges">
-            <HalfAngleGauge value={test} title="Roll" gauge={Colors.blue}/>
-            <HalfAngleGauge value={1 - test} title="Pitch" max={2}/>
-            <HalfAngleGauge value={1 - test} title="Yaw" start={0.5}/>
-        </Widget>
-        <HalfAngleGauge value={1 - test} title="Custom Bounds" start={0.2} min={-1} max={2}/>
-        <FullAngleGauge value={test - 0.5} min={-0.5} max={0.5} title="Full Angle Gauge"/>
-        <HorizontalLinearGauge value={test} title="Horizontal Linear"/>
-        <Widget title="Vertical Linear Gauges">
-            <VerticalLinearGauge value={1 - test} title="x"/>
-            <VerticalLinearGauge value={test + -0.5} title="y"/>
-            <VerticalLinearGauge value={test * 0.5} title="z"/>
-        </Widget>
-        <Widget title="Linked Widgets">
-            <Widget title="Linear Range Sliders">
-                <div style={{display: "flex", flexDirection: "column"}}>
-                    <HorizontalRangeSlider value={x} setValue={setX} title="x" min={-1} max={1}/>
-                    <HorizontalRangeSlider value={y} setValue={setY} title="y" min={-1} max={1}/>
-                </div>
+        <Widget title="Raw Sensor Readings">
+            <Widget title="Angular Velocity">
+                <VerticalLinearGauge value={10} min={-180} max={180} title="Roll"/>
+                <VerticalLinearGauge value={20} min={-180} max={180} title="Pitch"/>
+                <VerticalLinearGauge value={-10} min={-180} max={180} title="Yaw"/>
             </Widget>
-            <Widget title="Output">
-                <VerticalLinearGauge value={x} title="x" min={-1} max={1}/>
-                <VerticalLinearGauge value={y} title="y" min={-1} max={1}/>
-                <VerticalLinearGauge value={x-y} min={-1} max={1} title="x - y" gauge={((x-y) < 0 ? Colors.red : Colors.green)}/>
-                <VerticalLinearGauge value={Math.sqrt(x*x + y*y)} min={0} max={2} title="Distance" />
+            <Widget title="Linear Acceleration">
+                <VerticalLinearGauge value={-0.1} min={-20} max={20} title="X"/>
+                <VerticalLinearGauge value={0.1} min={-20} max={20} title="Y"/>
+                <VerticalLinearGauge value={10} min={-20} max={20} title="Z"/>
             </Widget>
-            <GridSlider title="Grid Slider" 
-                values={[{x: x, y: y}]} 
-                setValue={(i, value) => {
-                    setX(value.x);
-                    setY(value.y);
-                }}
-                xbounds={{
-                    min: -1.5,
-                    max: 1.5
-                }}
-            />
-            {/* <PrimaryFlightDisplay roll={x * 30} pitch={y * 30}/> */}
         </Widget>
-        <TimePlot values={[x, y, test, -(test-1)]} maxPoints={200} min={-1} max={2}/>
+        <Widget title="Control Panel">
+            <Column>
+                <HorizontalRangeSlider value={0.0} setValue={(a) => {}} title="kP"/>
+                <HorizontalRangeSlider value={0.0} setValue={(a) => {}} title="Throttle"/>
+                <HorizontalRangeSlider value={0.0} setValue={(a) => {}} title="kP"/>
+            </Column>
+            <GridSlider values={[{x: 0, y: 0}]} setValue={(a) => {}} title="Axis 1, 2"/>
+        </Widget>
     </main>)
 }

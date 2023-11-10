@@ -28,7 +28,7 @@ export function Widget({ title, children } : WidgetArgs) {
             }}>
                 <span style={{fontWeight: "bold"}}>{title}</span>
             </div>
-            <div style={{padding: "10px"}}>
+            <div style={{padding: "10px", display: "flex", flexDirection: "row"}}>
 
             {children}
             </div>

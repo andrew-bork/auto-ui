@@ -2,13 +2,15 @@ import { Fragment } from "react";
 import { Widget } from "../Widget";
 
 
-interface PrimaryFlightDisplay {
+interface ArtificialHorizonArgs {
     roll?: number,
     pitch?: number,
+    title?: string,
+    size?: number,
 }
 
 
-export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlightDisplayArgs) {
+export default function ArtificialHorizon({roll = 0, pitch = 0, title="Airplane", size=300} : ArtificialHorizonArgs) {
 
 
     const M_T_FT = 3.281;
@@ -61,8 +63,8 @@ export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlig
     pitchSetpointLocation = Math.min(Math.max(-(pitchSetpoint - pitch) * pitchScale, -Math.sqrt((rollTickDist - 1) * (rollTickDist - 1) - 100)), 16);
 
     return (
-        <Widget title="Airplane">
-            <svg style={{maxWidth: "100%", maxHeight: "100%"}} viewBox="20 20 40 40" xmlns="http://www.w3.org/2000/svg" strokeLinecap="round" strokeLinejoin="round" stroke="black" width="300px">
+        <Widget title={title}>
+            <svg style={{maxWidth: "100%", maxHeight: "100%"}} viewBox="20 20 40 40" xmlns="http://www.w3.org/2000/svg" strokeLinecap="round" strokeLinejoin="round" stroke="black" width={`${size}px`}>
             
             {/* Pitch Indicator Clipping */}
             <clipPath id="roll-pitch-clip">
