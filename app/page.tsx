@@ -55,8 +55,8 @@ export default function Home() {
         const socket = io("http://localhost:2032");
 
         socket.on("data", (data) => {
-            setData(data);
             // console.log(data);
+            setData(data);
         });
 
         return () => {

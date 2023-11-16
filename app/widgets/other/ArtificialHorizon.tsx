@@ -12,6 +12,8 @@ interface ArtificialHorizonArgs {
 
 export default function ArtificialHorizon({roll = 0, pitch = 0, title="Airplane", size=300} : ArtificialHorizonArgs) {
 
+    if(isNaN(roll)) roll = 0;
+    if(isNaN(pitch)) pitch = 0;
 
     const M_T_FT = 3.281;
     const R_T_D = 180 / Math.PI;
