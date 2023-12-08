@@ -6,7 +6,7 @@
 
 
 import { useEffect, useRef } from "react";
-import { Widget } from "../Widget";
+import { WidgetGroup } from "../Widget";
 import { Colors } from "../WidgetSettings";
 
 interface TimePlotArgs {
@@ -207,8 +207,8 @@ export function TimePlot({values, min, max, maxPoints} : TimePlotArgs) {
         widgetRef.current.appendChild(canvasRef.current.mainCanvas);
     }, [widgetRef])
 
-    return (<Widget title="Graph" ref={widgetRef}>
-    </Widget>)
+    return (<WidgetGroup title="Graph" ref={widgetRef}>
+    </WidgetGroup>)
 }
 /*
 

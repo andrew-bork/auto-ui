@@ -1,4 +1,4 @@
-import { Widget } from "../Widget";
+import { WidgetGroup } from "../Widget";
 
 interface GaugeArgs {
     value: number,
@@ -9,18 +9,21 @@ interface GaugeArgs {
     color?: string,
     title?: string,
     label?: string,
+    size?: number
 }
 
-export function HalfAngleGauge({ value, start, min, max, gauge, color, title, label } : GaugeArgs){
+export function HalfAngleGauge({ value, start, min, max, gauge, color, label, size } : GaugeArgs){
 
     start ??= 0;
     min ??= 0;
     max ??= 1;
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
-    title ??= "";
     label ??= (Math.round(value * 10)/10).toFixed(1);
 
+    size ??= 1;
+    const width = 128 * size;
+    const height = 64 * size;
 
     const viewport = {
         width: 48,
@@ -52,26 +55,27 @@ export function HalfAngleGauge({ value, start, min, max, gauge, color, title, la
     }
     const ccwFlag = (percentStart < percentEnd ? 1 : 0);
 
-    return (<Widget title={title}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width="150px" height="75px">
+    return (
+        <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width={`${width}px`} height={`${height}px`}>
             <path d={`M ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 0 ${ccwFlag} ${endPoint.x} ${endPoint.y}`} stroke={gaugeColor} fill="none" strokeWidth={strokeWidth}></path>
             <text fill={textColor} x={viewport.width/2} y={viewport.height -2} fontSize={viewport.height / 2} textAnchor="middle" fontVariant="tabular-nums">{label}</text>
-        </svg>
-    </Widget>)
+        </svg>)
 }
 
 
 
-export function FullAngleGauge({ value, start, min, max, gauge, color, title, label } : GaugeArgs){
+export function FullAngleGauge({ value, start, min, max, gauge, color, size, label } : GaugeArgs){
 
     start ??= 0;
     min ??= 0;
     max ??= 1;
     gauge ??= "#5EE05C";
     color ??= "#FFFFFFDD";
-    title ??= "";
     label ??= (Math.round(value * 10)/10).toFixed(1);
 
+    size ??= 1;
+    const width = 128 * size;
+    const height = 128 * size;
 
     const viewport = {
         width: 48,
@@ -103,12 +107,10 @@ export function FullAngleGauge({ value, start, min, max, gauge, color, title, la
     }
     const ccwFlag = (percentStart < percentEnd ? 1 : 0);
 
-    return (<Widget title={title}>
-        <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width="150px" height="150px">
+    return (<svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`} width={`${width}px`} height={`${height}px`}>
 
             <path d={`M ${startPoint.x} ${startPoint.y} A ${r} ${r} 0 0 ${ccwFlag} ${endPoint.x} ${endPoint.y}`} stroke={gaugeColor} fill="none" strokeWidth={strokeWidth}></path>
             <text fill={textColor} x={viewport.width/2} y={viewport.height/2+1} fontSize={viewport.height / 4} dominantBaseline="middle" textAnchor="middle" fontVariant="tabular-nums">{label}</text>
-        </svg>
-    </Widget>)
+        </svg>)
 }
 

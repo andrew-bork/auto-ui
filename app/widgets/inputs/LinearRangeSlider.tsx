@@ -1,4 +1,4 @@
-import { Widget } from "../Widget"
+import { WidgetGroup } from "../Widget"
 
 interface RangeSliderArgs {
     value: number,
@@ -21,7 +21,7 @@ export function HorizontalRangeSlider({value, setValue, min, max, title, step} :
     // label ??= (Math.round(value * 10)*10).toFixed(0);
 
 
-    return (<Widget title={title}>
+    return (<WidgetGroup title={title}>
         <input type="range" onChange={(e) => {setValue(parseFloat(e.target.value))}} min={min} max={max} value={value} step={step}/>
-    </Widget>)
+    </WidgetGroup>)
 }

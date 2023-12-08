@@ -1,14 +1,18 @@
 import { Fragment } from "react";
-import { Widget } from "../Widget";
+import { WidgetGroup } from "../Widget";
 
 
-interface PrimaryFlightDisplay {
+interface ArtificialHorizonArgs {
     roll?: number,
     pitch?: number,
+
+    rollSetpoint?: number,
+    pitchSetpoint?: number,
+
 }
 
 
-export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlightDisplayArgs) {
+export default function ArtificialHorizon({roll = 0, pitch = 0, rollSetpoint, pitchSetpoint} : ArtificialHorizonArgs) {
 
 
     const M_T_FT = 3.281;
@@ -21,9 +25,7 @@ export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlig
     roll = roll ?? 0;
     pitch = pitch ?? 0;
 
-    let altitude = 0;
-    let pitchSetpoint = 100;
-    let rollSetpoint = 0;
+    // let altitude = 0;
 
     const pitchTicks = [];
     for(let angle = -36; angle <= 36; angle ++) {
@@ -56,13 +58,15 @@ export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlig
         rollTicks.push({value: angle * Math.PI / 180, width: width});
     }
 
-    let pitchSetpointLocation = 0;
+    let pitchSetpointLocation;
     // 10 * 10 + y*y < rollTickDist - 2 ^ 2
-    pitchSetpointLocation = Math.min(Math.max(-(pitchSetpoint - pitch) * pitchScale, -Math.sqrt((rollTickDist - 1) * (rollTickDist - 1) - 100)), 16);
-
+    if(pitchSetpoint != null){
+        pitchSetpointLocation = Math.min(Math.max(-(pitchSetpoint - pitch) * pitchScale, -Math.sqrt((rollTickDist - 1) * (rollTickDist - 1) - 100)), 16);
+    }
+    
     return (
-        <Widget title="Airplane">
-            <svg style={{maxWidth: "100%", maxHeight: "100%"}} viewBox="20 20 40 40" xmlns="http://www.w3.org/2000/svg" strokeLinecap="round" strokeLinejoin="round" stroke="black" width="300px">
+        <WidgetGroup title="Airplane">
+            <svg style={{maxWidth: "100%", maxHeight: "100%"}} viewBox="20 20 40 40" xmlns="http://www.w3.org/2000/svg" strokeLinecap="round" strokeLinejoin="round" stroke="black" width="128px">
             
             {/* Pitch Indicator Clipping */}
             <clipPath id="roll-pitch-clip">
@@ -89,10 +93,13 @@ export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlig
                     <path fill="none" d={`M 40 ${40-rollTickDist + 0.5} L 39.5 ${40-rollTickDist + 1.5} L 40.5 ${40-rollTickDist + 1.5} L 40 ${40-rollTickDist + 0.5}`}></path>
                     
                     {/* Pitch Setpoint Indicator */}
-                    <g>
-                        <path fill="none" d={`M 30 ${pitchSetpointLocation + 40} L 29 ${pitchSetpointLocation + 39.5} L 29 ${pitchSetpointLocation + 40.5} L 30 ${pitchSetpointLocation + 40}`}></path>
-                        <path fill="none" d={`M 50 ${pitchSetpointLocation + 40} L 51 ${pitchSetpointLocation + 39.5} L 51 ${pitchSetpointLocation + 40.5} L 50 ${pitchSetpointLocation + 40}`}></path>    
-                    </g>
+                    {(pitchSetpointLocation != null ? 
+                        <g>
+                            <path fill="none" d={`M 30 ${pitchSetpointLocation + 40} L 29 ${pitchSetpointLocation + 39.5} L 29 ${pitchSetpointLocation + 40.5} L 30 ${pitchSetpointLocation + 40}`}></path>
+                            <path fill="none" d={`M 50 ${pitchSetpointLocation + 40} L 51 ${pitchSetpointLocation + 39.5} L 51 ${pitchSetpointLocation + 40.5} L 50 ${pitchSetpointLocation + 40}`}></path>    
+                        </g> : <></>
+                    )}
+                    
             
                     {/* // Pitch Indicator */}
                     <g clipPath="url(#roll-pitch-clip)">
@@ -129,12 +136,13 @@ export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlig
                 <path d={`M ${rollTickDist * Math.sin(tick.value) + 40} ${- rollTickDist * Math.cos(tick.value) + 40} L ${(rollTickDist + tick.width) * Math.sin(tick.value) + 40} ${- (rollTickDist + tick.width) * Math.cos(tick.value) + 40}`}></path>
                 {/each} */}
             </g>
-
             {/* Roll Setpoint Indicator */}
-            <g transform={`rotate(${-rollSetpoint}, {}, 40)`}>
-                <path d={`M 40 ${40-rollTickDist - 2.5} L 39.5 ${40-rollTickDist-2.5 -1} L 40.5 ${40-rollTickDist- 2.5- 1} L 40 ${40-rollTickDist -2.5}`} strokeWidth="0.2" stroke="black" fill="none"></path>
-            </g>
-            
+            {
+                (rollSetpoint != null ? 
+                    <g transform={`rotate(${-rollSetpoint}, {}, 40)`}>
+                        <path d={`M 40 ${40-rollTickDist - 2.5} L 39.5 ${40-rollTickDist-2.5 -1} L 40.5 ${40-rollTickDist- 2.5- 1} L 40 ${40-rollTickDist -2.5}`} strokeWidth="0.2" stroke="black" fill="none"></path>
+                    </g> : <></>)
+            }
             {/* // Center Crosshair */}
             <g strokeWidth="0.28" fill="none">
                 <path d="M 37 40 L 39.5 40"></path>
@@ -150,5 +158,5 @@ export default function PrimaryFlightDisplay({roll = 0, pitch = 0} : PrimaryFlig
                 <text stroke="none" x="74" y="40" textAnchor="end" dominantBaseline="central" fontSize="2px">{(altitude).toFixed(2)}</text>
             </g> */}
         </svg>
-        </Widget>)
+        </WidgetGroup>)
 }

@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Widget } from "../Widget";
+import { WidgetGroup } from "../Widget";
 import { Colors } from "../WidgetSettings";
 import Style from "./GridSlider.module.css";
 
@@ -92,7 +92,7 @@ export function GridSlider({ title, values, setValue, xbounds, ybounds } : GridS
         : <></>)
 
 
-    return (<Widget title={title}>
+    return (<WidgetGroup title={title}>
         <svg xmlns="http://www.w3.org/2000/svg" viewBox={`0 0 ${viewport.width} ${viewport.height}`}  width="300px" height="300px"
             onMouseUp={() => {
                 setDragging(-1);
@@ -113,6 +113,6 @@ export function GridSlider({ title, values, setValue, xbounds, ybounds } : GridS
             {ellipsePoints}
             <rect x={0} y={0} width={viewport.width} height={viewport.height} fill="none" stroke="#ffffff33" strokeWidth={0.3}></rect>
         </svg>
-    </Widget>)
+    </WidgetGroup>)
 
 }

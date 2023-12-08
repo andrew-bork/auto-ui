@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { Widget } from "../Widget";
+import { WidgetGroup } from "../Widget";
 
 
 interface Bounds {
@@ -74,7 +74,7 @@ export function LineGraph(props : LineGraphArgs) {
         ctxRef.current = canvasRef.current.getContext("2d");
     }, [canvasRef]);
 
-    return (<Widget title={title}>
+    return (<WidgetGroup title={title}>
         <canvas ref={canvasRef}></canvas>
-    </Widget>)
+    </WidgetGroup>)
 }
