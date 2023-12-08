@@ -48,6 +48,13 @@ export default function Home() {
         throttle: 0.0,
         motors: {
             fl: 0.0, fr: 0.0, bl: 0.0, br: 0.0,
+        },
+        control: {
+            pitch: {
+                kP: 0.0,
+                kI: 0.0,
+                kD: 0.0,
+            }
         }
     });
 
@@ -113,7 +120,17 @@ export default function Home() {
         </Widget>
         <Widget title="Control Panel">
             <Column>
-                <HorizontalRangeSlider value={0.0} setValue={(a) => {}} title="kP"/>
+                <HorizontalRangeSlider value={0.0} setValue={(a) => {
+                    fetch("http://localhost:2032/execute", {
+                        method: "POST",    
+                        body: JSON.stringify({
+                            command: "set",
+                            args: ["ad", a]
+                        }),
+                        headers: {
+                            "content-type": "application/json"
+                        }
+                    });}} title="kP"/>
                 <HorizontalRangeSlider value={data.throttle} setValue={(a) => {
                     fetch("http://localhost:2032/execute", {
                         method: "POST",    
